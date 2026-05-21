@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: udp-joker
+  namespace: udp-joker
+  labels:
+    app: udp-joker
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: udp-joker
+  template:
+    metadata:
+      labels:
+        app: udp-joker
+    spec:
+      containers:
+        - name: udp-joker
+          image: incept10n/udpjoker:latest
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: "Europe/Moscow"
+            - name: TELEGRAM_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: udp-joker-secrets
+                  key: BOT_TOKEN
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+      restartPolicy: Always
