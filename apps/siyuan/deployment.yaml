@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: siyuan
+  namespace: siyuan
+  labels:
+    app: siyuan
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: siyuan
+  template:
+    metadata:
+      labels:
+        app: siyuan
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: siyuan
+          image: b3log/siyuan:latest
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--workspace=/siyuan/workspace/"
+            - "--accessAuthCode=12345"
+          ports:
+            - name: http
+              containerPort: 6806
+              protocol: TCP
+          env:
+            - name: TZ
+              value: "Asia/Shanghai"  # change as needed
+          volumeMounts:
+            - name: workspace
+              mountPath: /siyuan/workspace
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 6806
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 6806
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: siyuan-workspace
+      restartPolicy: Always
