@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: udp-joker
-          image: incept10n/udpjoker:master
+          image: incept1on/udp-joker:master
           imagePullPolicy: Always
           env:
             - name: TZ
