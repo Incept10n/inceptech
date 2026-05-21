@@ -22,5 +22,5 @@ spec:
                   number: 6806
   tls:
     - hosts:
-        - siyuan.example.com
+        - siyuan.inceptech.ru
       secretName: siyuan-tls
