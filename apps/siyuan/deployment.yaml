@@ -16,21 +16,32 @@ spec:
     metadata:
       labels:
         app: siyuan
+      annotations:
+        # Forces pod restart when secret changes (so new accessAuthCode is picked up)
+        secret/checksum: "managed-by-eso"
     spec:
       containers:
         - name: siyuan
           image: b3log/siyuan:latest
           imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
           args:
-            - "--workspace=/siyuan/workspace/"
-            - "--accessAuthCode=12345"
+            - |
+              exec /opt/siyuan/entrypoint.sh \
+                --workspace=/siyuan/workspace/ \
+                --accessAuthCode="${ACCESS_AUTH_CODE}"
           ports:
             - name: http
               containerPort: 6806
               protocol: TCP
           env:
             - name: TZ
-              value: "Europe/Moscow"  # change as needed
+              value: "Europe/Moscow"
+            - name: ACCESS_AUTH_CODE
+              valueFrom:
+                secretKeyRef:
+                  name: siyuan-secrets
+                  key: accessAuthCode
           volumeMounts:
             - name: workspace
               mountPath: /siyuan/workspace
