@@ -41,18 +41,6 @@ spec:
             limits:
               cpu: "1000m"
               memory: "1Gi"
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 6806
-            initialDelaySeconds: 10
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 6806
-            initialDelaySeconds: 30
-            periodSeconds: 30
       volumes:
         - name: workspace
           persistentVolumeClaim:
