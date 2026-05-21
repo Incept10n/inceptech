@@ -34,7 +34,7 @@ spec:
               protocol: TCP
           env:
             - name: TZ
-              value: "Asia/Shanghai"  # change as needed
+              value: "Europe/Moscow"  # change as needed
           volumeMounts:
             - name: workspace
               mountPath: /siyuan/workspace

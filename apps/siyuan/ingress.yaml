@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: siyuan.example.com
+    - host: siyuan.inceptech.com
       http:
         paths:
           - path: /
