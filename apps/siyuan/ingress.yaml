@@ -6,6 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    cert-manager.io/cluster-issuer: letsencrypt
 spec:
   ingressClassName: nginx
   rules:
@@ -19,7 +20,7 @@ spec:
                 name: siyuan
                 port:
                   number: 6806
-  # tls:
-  #   - hosts:
-  #       - siyuan.example.com
-  #     secretName: siyuan-tls
+  tls:
+    - hosts:
+        - siyuan.example.com
+      secretName: siyuan-tls
