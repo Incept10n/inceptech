@@ -16,6 +16,7 @@ spec:
       initContainers:
         - name: render-config
           image: incept1on/displayify:back
+          imagePullPolicy: Always
           command:
             - sh
             - -c
@@ -30,9 +31,9 @@ spec:
               fi
 
               echo "Rendering $TEMPLATE -> /rendered/mediamtx.yml"
-              # ключ --strict-undefined упадёт если какая-то переменная не задана
               jinja2 --strict "$TEMPLATE" > /rendered/mediamtx.yml
               echo "---- rendered ----"
+              cat /rendered/mediamtx.yml
           volumeMounts:
             - name: rendered
               mountPath: /rendered
@@ -50,16 +51,17 @@ spec:
       containers:
         - name: mediamtx
           image: incept1on/displayify:back
+          imagePullPolicy: Always
           ports:
-            - containerPort: 1935  # RTMP
-            - containerPort: 1936  # RTMPS
-            - containerPort: 8889  # WebRTC
+            - containerPort: 1935
+            - containerPort: 1936
+            - containerPort: 8889
           volumeMounts:
             - name: tls
-              mountPath: /etc/nginx/pki 
+              mountPath: /etc/nginx/pki
               readOnly: true
             - name: rendered
-              mountPath: rendered
+              mountPath: /rendered
           resources:
             requests:
               cpu: "100m"
