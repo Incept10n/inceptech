@@ -26,11 +26,8 @@ spec:
               source .venv/bin/activate
               pip install --quiet --disable-pip-version-check jinja2-cli
 
-              TEMPLATE=$(find /template -name 'mediamtx.yml.j2' | head -n1)
-              if [ -z "$TEMPLATE" ]; then
-                echo "ERROR: mediamtx.yml.j2 not found"
-                exit 1
-              fi
+              ls -la
+              pwd
 
               echo "Rendering $TEMPLATE -> /rendered/mediamtx.yml"
               jinja2 --strict "$TEMPLATE" > /rendered/mediamtx.yml
