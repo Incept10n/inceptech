@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: displayify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: nginx
+          image: incept1on/displayify:front
+          ports:
+            - containerPort: 443
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/nginx/pki
+              readOnly: true
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+      volumes:
+        - name: tls
+          secret:
+            secretName: displayify-secrets
+            items:
+              - key: server.crt
+                path: server.crt
+              - key: server.key
+                path: server.key
+              - key: ca.crt
+                path: ca.crt

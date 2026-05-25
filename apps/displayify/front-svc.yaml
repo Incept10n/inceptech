@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: displayify
+spec:
+  selector:
+    app: frontend
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443

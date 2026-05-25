@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mediamtx
+  namespace: displayify
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mediamtx
+  template:
+    metadata:
+      labels:
+        app: mediamtx
+    spec:
+      initContainers:
+        - name: render-config
+          image: incept1on/displayify:back
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              pip install --quiet --disable-pip-version-check jinja2-cli
+
+              TEMPLATE=$(find /template -name 'mediamtx.yml.j2' | head -n1)
+              if [ -z "$TEMPLATE" ]; then
+                echo "ERROR: mediamtx.yml.j2 not found"
+                exit 1
+              fi
+
+              echo "Rendering $TEMPLATE -> /rendered/mediamtx.yml"
+              # ключ --strict-undefined упадёт если какая-то переменная не задана
+              jinja2 --strict "$TEMPLATE" > /rendered/mediamtx.yml
+              echo "---- rendered ----"
+          volumeMounts:
+            - name: rendered
+              mountPath: /rendered
+          env:
+            - name: RTMP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: displayify-secrets
+                  key: RTMP_USER
+            - name: RTMP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: displayify-secrets
+                  key: RTMP_PASS
+      containers:
+        - name: mediamtx
+          image: incept1on/displayify:back
+          ports:
+            - containerPort: 1935  # RTMP
+            - containerPort: 1936  # RTMPS
+            - containerPort: 8889  # WebRTC
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/nginx/pki 
+              readOnly: true
+            - name: rendered
+              mountPath: rendered
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+      volumes:
+        - name: tls
+          secret:
+            secretName: displayify-secrets
+            items:
+              - key: server.crt
+                path: server.crt
+              - key: server.key
+                path: server.key
+        - name: rendered
+          emptyDir: {}
