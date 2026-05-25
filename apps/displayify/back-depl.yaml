@@ -26,11 +26,8 @@ spec:
               source .venv/bin/activate
               pip install --quiet --disable-pip-version-check jinja2-cli
 
-              ls -la
-              pwd
-
-              echo "Rendering $TEMPLATE -> /rendered/mediamtx.yml"
-              jinja2 --strict "$TEMPLATE" > /rendered/mediamtx.yml
+              echo "Rendering mediamtx.yml.j2 -> /rendered/mediamtx.yml"
+              jinja2 --strict "mediamtx.yml.j2" > /rendered/mediamtx.yml
               echo "---- rendered ----"
               cat /rendered/mediamtx.yml
           volumeMounts:
