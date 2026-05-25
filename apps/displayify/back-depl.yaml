@@ -22,6 +22,8 @@ spec:
             - -c
             - |
               set -eu
+              python3 -m venv .venv
+              source .venv/bin/activate
               pip install --quiet --disable-pip-version-check jinja2-cli
 
               TEMPLATE=$(find /template -name 'mediamtx.yml.j2' | head -n1)
