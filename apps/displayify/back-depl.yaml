@@ -28,13 +28,8 @@ spec:
 
               env > /tmp/vars.env
 
-              ls -la
-              ls -la /
-              pwd
-              ls -la rendered
-
               echo "Rendering mediamtx.yml.j2 -> /rendered/mediamtx.yml"
-              jinja2 --strict --format=env mediamtx.yml.j2 /tmp/vars.env > rendered/mediamtx.yml
+              jinja2 --strict --format=env mediamtx.yml.j2 /tmp/vars.env > /rendered/mediamtx.yml
               echo "---- rendered ----"
               cat /rendered/mediamtx.yml
           volumeMounts:
