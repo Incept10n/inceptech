@@ -35,4 +35,20 @@ spec:
             limits:
               cpu: 1000m
               memory: 512Mi
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/nginx/pki
+              readOnly: true
       terminationGracePeriodSeconds: 30
+      
+      volumes:
+        - name: tls
+          secret:
+            secretName: displayify-secrets
+            items:
+              - key: server.crt
+                path: server.crt
+              - key: server.key
+                path: server.key
+              - key: ca.crt
+                path: ca.crt
