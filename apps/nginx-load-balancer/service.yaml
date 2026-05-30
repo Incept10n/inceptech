@@ -16,3 +16,6 @@ spec:
     - name: rtmps
       port: 1936
       targetPort: 1936
+    - name: webrtc
+      port: 8889
+      targetPort: 8889
