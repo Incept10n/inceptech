@@ -54,6 +54,7 @@ spec:
             - containerPort: 1935
             - containerPort: 1936
             - containerPort: 8889
+            - containerPort: 8189
           volumeMounts:
             - name: tls
               mountPath: /etc/nginx/pki
