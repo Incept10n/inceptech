@@ -32,8 +32,9 @@ spec:
               containerPort: 8889
               protocol: TCP
             - name: webrtc-udp
-              port: 8189
-              targetPort: 8189
+              containerPort: 8189
+              protocol: 8189
+              protocol: UDP
           resources:
             requests:
               cpu: 100m
