@@ -28,6 +28,9 @@ spec:
             - name: rtmps
               containerPort: 1936
               protocol: TCP
+            - name: webrtc
+              containerPort: 8889
+              protocol: TCP
           resources:
             requests:
               cpu: 100m
