@@ -13,3 +13,6 @@ spec:
     - name: rtmp
       port: 1935
       targetPort: 1935
+    - name: webrtc
+      port: 8889
+      targetPort: 8889
