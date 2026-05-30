@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mediamtx-webrtc
+  namespace: displayify
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: mediamtx
+  ports:
+    - name: webrtc-http
+      port: 8889
+      targetPort: 8889
+      protocol: TCP
+    - name: webrtc-ice
+      port: 8189
+      targetPort: 8189
+      protocol: UDP
