@@ -22,3 +22,4 @@ spec:
     - name: webrtc-udp
       port: 8189
       targetPort: 8189
+      protocol: UDP 

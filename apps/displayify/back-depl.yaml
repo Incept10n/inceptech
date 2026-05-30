@@ -54,9 +54,8 @@ spec:
             - containerPort: 1935
             - containerPort: 1936
             - containerPort: 8889
-            - name: webrtc-udp
+            - name: webrtc-udp    # ← FIXED
               containerPort: 8189
-              protocol: 8189
               protocol: UDP
           volumeMounts:
             - name: tls
