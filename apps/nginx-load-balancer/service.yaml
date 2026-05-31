@@ -13,6 +13,3 @@ spec:
     - name: https
       port: 443
       targetPort: 443
-    - name: rtmps
-      port: 1936
-      targetPort: 1936
