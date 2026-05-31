@@ -4,16 +4,21 @@ metadata:
   name: mediamtx-webrtc
   namespace: displayify
 spec:
-  type: LoadBalancer
-  externalTrafficPolicy: Local
+  type: NodePort
+  externalTrafficPolicy: Local  # Сохраняет реальный IP клиента
   selector:
     app: mediamtx
   ports:
+    # HTTP API и WebRTC HTTP
     - name: webrtc-http
       port: 8889
       targetPort: 8889
       protocol: TCP
+      nodePort: 30889  # Внешний порт на ноде (30000-32767)
+    
+    # WebRTC ICE (UDP)
     - name: webrtc-ice
       port: 8189
       targetPort: 8189
       protocol: UDP
+      nodePort: 30189  # Внешний UDP порт на ноде
