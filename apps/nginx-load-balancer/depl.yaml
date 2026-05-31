@@ -35,11 +35,9 @@ spec:
             - name: tls
               mountPath: /etc/nginx/pki
               readOnly: true
-          volumeMounts:
             - name: siyuan-tls
               mountPath: /etc/nginx/certs/siyuan
               readOnly: true
-          volumeMounts:
             - name: argocd-server-tls
               mountPath: /etc/nginx/certs/argocd
               readOnly: true
