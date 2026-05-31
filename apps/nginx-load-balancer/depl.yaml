@@ -45,6 +45,14 @@ spec:
             - name: tls
               mountPath: /etc/nginx/pki
               readOnly: true
+          volumeMounts:
+            - name: siyuan-tls
+              mountPath: /etc/nginx/certs/siyuan
+              readOnly: true
+          volumeMounts:
+            - name: argocd-server-tls
+              mountPath: /etc/nginx/certs/argocd
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -58,3 +66,19 @@ spec:
                 path: server.key
               - key: ca.crt
                 path: ca.crt
+        - name: siyuan-tls
+          secret:
+            secretName: siyuan-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: argocd-server-tls
+          secret:
+            secretName: argocd-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
