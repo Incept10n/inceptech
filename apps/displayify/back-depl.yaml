@@ -50,6 +50,8 @@ spec:
         - name: mediamtx
           image: incept1on/displayify:back
           imagePullPolicy: Always
+          hostNetwork: true
+          dnsPolicy: ClusterFirstWithHostNet
           ports:
             - containerPort: 1935
             - containerPort: 1936
