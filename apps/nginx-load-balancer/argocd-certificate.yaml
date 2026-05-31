@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: argocd-server-tls
-  namespace: nginx-proxy
+  namespace: nginx-load-balancer
 spec:
   secretName: argocd-server-tls
   issuerRef:

@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: siyuan-tls
-  namespace: nginx-proxy
+  namespace: nginx-load-balancer
 spec:
   secretName: siyuan-tls
   issuerRef:
