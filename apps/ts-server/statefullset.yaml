@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ts3
+spec:
+  serviceName: ts3-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ts3
+  template:
+    metadata:
+      labels:
+        app: ts3
+    spec:
+      containers:
+      - name: teamspeak
+        image: your-registry/ts3:13.8 # Замените на имя вашего образа
+        ports:
+        - containerPort: 9987
+          name: voice
+          protocol: UDP
+        - containerPort: 10011
+          name: query
+          protocol: TCP
+        - containerPort: 30033
+          name: filetransfer
+          protocol: TCP
+        volumeMounts:
+        - name: ts3-data
+          mountPath: /opt/ts3  # Туда сохраняются базы и файлы
+        env:
+        - name: TS3SERVER_LICENSE
+          value: "accept"
+  volumeClaimTemplates:
+  - metadata:
+      name: ts3-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi # Размер диска для логов, файлов и БД

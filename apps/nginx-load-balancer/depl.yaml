@@ -19,11 +19,29 @@ spec:
           image: incept1on/inceptech-nginx-balancer:master
           imagePullPolicy: Always
           ports:
+            # HTTP/HTTPS ports
             - name: http
               containerPort: 80
               protocol: TCP
             - name: https
               containerPort: 443
+              protocol: TCP
+            
+            # --- NEW: TeamSpeak Ports ---
+            # Voice (UDP)
+            - name: ts3-voice
+              containerPort: 9987
+              protocol: UDP
+            # ServerQuery (TCP)
+            - name: ts3-query
+              containerPort: 10011
+              protocol: TCP
+            # FileTransfer (TCP)
+            - name: ts3-file
+              containerPort: 30033
+              protocol: TCP
+            # -----------------------------
+
           resources:
             requests:
               cpu: 100m
