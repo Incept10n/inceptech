@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ts-server
+  labels:
+    name: ts-server
+    app: ts-server
