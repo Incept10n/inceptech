@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: siyuan-tls
+  namespace: nginx-proxy
+spec:
+  secretName: siyuan-tls
+  issuerRef:
+    name: regru-dns
+    kind: ClusterIssuer
+  dnsNames:
+    - siyuan.inceptech.ru
