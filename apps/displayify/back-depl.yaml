@@ -13,6 +13,8 @@ spec:
       labels:
         app: mediamtx
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       initContainers:
         - name: render-config
           image: incept1on/displayify:back
@@ -50,7 +52,6 @@ spec:
         - name: mediamtx
           image: incept1on/displayify:back
           imagePullPolicy: Always
-          hostNetwork: true
           ports:
             - containerPort: 1935
             - containerPort: 1936
