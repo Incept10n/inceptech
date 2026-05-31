@@ -24,16 +24,6 @@ spec:
               protocol: TCP
             - name: https
               containerPort: 443
-              protocol: TCP
-            - name: rtmps
-              containerPort: 1936
-              protocol: TCP
-            - name: webrtc
-              containerPort: 8889
-              protocol: TCP
-            - name: webrtc-udp
-              containerPort: 8189
-              protocol: UDP
           resources:
             requests:
               cpu: 100m
