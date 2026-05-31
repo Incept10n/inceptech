@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: teamspeak
-        image: your-registry/ts3:13.8 # Замените на имя вашего образа
+        image: incept1on/ts-server:master # Замените на имя вашего образа
         ports:
         - containerPort: 9987
           name: voice
