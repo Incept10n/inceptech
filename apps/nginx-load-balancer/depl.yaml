@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nginx-proxy
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: nginx-proxy
@@ -41,7 +41,22 @@ spec:
               containerPort: 30033
               protocol: TCP
             # -----------------------------
-
+          readinessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /nginx-health
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
           resources:
             requests:
               cpu: 100m
@@ -49,6 +64,11 @@ spec:
             limits:
               cpu: 1000m
               memory: 512Mi
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 1
+              maxUnavailable: 0
           volumeMounts:
             - name: tls
               mountPath: /etc/nginx/pki
