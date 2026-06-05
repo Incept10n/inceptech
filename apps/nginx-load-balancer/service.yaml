@@ -4,6 +4,10 @@ metadata:
   name: nginx-proxy
 spec:
   type: LoadBalancer
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800  # 3 часа (максимальное время сессии TeamSpeak)
   selector:
     app: nginx-proxy
   ports:
