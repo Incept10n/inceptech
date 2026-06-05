@@ -31,9 +31,6 @@ spec:
         volumeMounts:
         - name: ts3-data
           mountPath: /opt/ts3
-        env:
-        - name: TS3SERVER_LICENSE
-          value: "accept"
   volumeClaimTemplates:
     - metadata:
         name: ts3-data
