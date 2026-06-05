@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: ts3
+  namespace: ts-server
 spec:
   serviceName: ts3-service
   replicas: 1
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
       - name: teamspeak
-        image: incept1on/ts-server:master # Замените на имя вашего образа
+        image: incept1on/ts-server:master
         ports:
         - containerPort: 9987
           name: voice
@@ -33,10 +34,11 @@ spec:
         - name: TS3SERVER_LICENSE
           value: "accept"
   volumeClaimTemplates:
-  - metadata:
-      name: ts3-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 5Gi # Размер диска для логов, файлов и БД
+    - metadata:
+        name: ts3-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
