@@ -22,12 +22,15 @@ spec:
         - containerPort: 9987
           name: voice
           protocol: UDP
+          hostPort: 9987
         - containerPort: 10011
           name: query
           protocol: TCP
+          hostPort: 10011
         - containerPort: 30033
           name: filetransfer
           protocol: TCP
+          hostPort: 30033
         volumeMounts:
         - name: ts3-data
           mountPath: /opt/ts3

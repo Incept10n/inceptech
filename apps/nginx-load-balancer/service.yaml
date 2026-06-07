@@ -4,10 +4,6 @@ metadata:
   name: nginx-proxy
 spec:
   type: LoadBalancer
-  sessionAffinity: ClientIP
-  sessionAffinityConfig:
-    clientIP:
-      timeoutSeconds: 10800  # 3 часа (максимальное время сессии TeamSpeak)
   selector:
     app: nginx-proxy
   ports:
@@ -17,15 +13,3 @@ spec:
     - name: https
       port: 443
       targetPort: 443
-    - name: ts3-voice
-      port: 9987
-      targetPort: 9987
-      protocol: UDP
-    - name: ts3-query
-      port: 10011
-      targetPort: 10011
-      protocol: TCP
-    - name: ts3-file
-      port: 30033
-      targetPort: 30033
-      protocol: TCP
