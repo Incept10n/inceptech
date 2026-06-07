@@ -64,6 +64,9 @@ spec:
             - name: argocd-server-tls
               mountPath: /etc/nginx/certs/argocd
               readOnly: true
+            - name: watchly-server-tls
+              mountPath: /etc/nginx/certs/watchly
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -88,6 +91,14 @@ spec:
         - name: argocd-server-tls
           secret:
             secretName: argocd-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: argocd-server-tls
+          secret:
+            secretName: watchly-server-tls
             items:
               - key: tls.crt
                 path: tls.crt
