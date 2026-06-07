@@ -96,7 +96,7 @@ spec:
                 path: tls.crt
               - key: tls.key
                 path: tls.key
-        - name: argocd-server-tls
+        - name: watchly-server-tls
           secret:
             secretName: watchly-server-tls
             items:
