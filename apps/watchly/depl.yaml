@@ -45,8 +45,3 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 101
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
