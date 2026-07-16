@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: siyuan-local-pv
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain   # <-- critical
+  storageClassName: local-storage         # custom class
+  local:
+    path: /mnt/siyuan-data                # path on your node
+  nodeAffinity:                           # ensures pod runs on the node where data lives
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - cl148rcr9mfmndd5t7fp-ebut
