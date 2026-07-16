@@ -26,8 +26,9 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              exec /opt/siyuan/entrypoint.sh \
-                --workspace=/siyuan/workspace/
+              exec /opt/siyuan/entrypoint.sh serve \
+                --workspace=/siyuan/workspace/ \
+                --accessAuthCode="${SIYUAN_ACCESS_AUTH_CODE}"
           ports:
             - name: http
               containerPort: 6806
