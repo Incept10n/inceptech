@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: watchly-api
-        image: incept1on/watchly-api:latest
+        image: incept1on/watchly-api:master
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
