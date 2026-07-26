@@ -28,7 +28,7 @@ spec:
         - name: SMTP_API_KEY
           valueFrom:
             secretKeyRef:
-              name: watchly-smtp-secret
+              name: watchly-api-secret
               key: api-key
         - name: FROM_EMAIL
           value: "noreply@watchly.inceptech.ru"
