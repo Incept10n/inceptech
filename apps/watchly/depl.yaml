@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: watchly
-        image: incept1on/whatchly:front
+        image: incept1on/watchly:front
         imagePullPolicy: Always
         ports:
         - containerPort: 80
