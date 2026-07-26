@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: restoration-watchly
+  namespace: restoration-watchly
+  labels:
+    app: restoration-watchly
+spec:
+  selector:
+    app: restoration-watchly
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  type: ClusterIP

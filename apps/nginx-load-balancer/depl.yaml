@@ -67,6 +67,9 @@ spec:
             - name: watchly-server-tls
               mountPath: /etc/nginx/certs/watchly
               readOnly: true
+            - name: restoration-watchly-server-tls
+              mountPath: /etc/nginx/certs/restoration-watchly
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -99,6 +102,14 @@ spec:
         - name: watchly-server-tls
           secret:
             secretName: watchly-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: restoration-watchly-server-tls
+          secret:
+            secretName: restoration-watchly-server-tls
             items:
               - key: tls.crt
                 path: tls.crt

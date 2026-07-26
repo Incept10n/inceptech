@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: restoration-watchly-server-tls
+  namespace: nginx-load-balancer
+spec:
+  secretName: restoration-watchly-server-tls
+  issuerRef:
+    name: regru-dns
+    kind: ClusterIssuer
+  dnsNames:
+    - restoration.watchly.inceptech.ru
