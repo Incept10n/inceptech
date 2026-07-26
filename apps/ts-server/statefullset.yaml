@@ -34,6 +34,13 @@ spec:
         volumeMounts:
         - name: ts3-data
           mountPath: /opt/ts3
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "1Gi"
   volumeClaimTemplates:
     - metadata:
         name: ts3-data
