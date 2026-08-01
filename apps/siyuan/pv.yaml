@@ -19,4 +19,4 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - cl148rcr9mfmndd5t7fp-ebut
+                - cl148rcr9mfmndd5t7fp-ocaq
