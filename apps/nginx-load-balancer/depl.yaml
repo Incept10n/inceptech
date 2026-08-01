@@ -70,6 +70,9 @@ spec:
             - name: restoration-watchly-server-tls
               mountPath: /etc/nginx/certs/restoration-watchly
               readOnly: true
+            - name: dev-watchly-inceptech-ru
+              mountPath: /etc/nginx/certs/dev-watchly-inceptech-ru
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -110,6 +113,14 @@ spec:
         - name: restoration-watchly-server-tls
           secret:
             secretName: restoration-watchly-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: dev-watchly-inceptech-ru
+          secret:
+            secretName: dev-watchly-inceptech-ru
             items:
               - key: tls.crt
                 path: tls.crt
