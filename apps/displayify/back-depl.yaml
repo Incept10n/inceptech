@@ -71,10 +71,10 @@ spec:
               mountPath: /rendered
           resources:
             requests:
-              cpu: "50m"
+              cpu: "150m"
               memory: "256Mi"
             limits:
-              cpu: "50m"
+              cpu: "150m"
               memory: "256Mi"
       volumes:
         - name: tls
