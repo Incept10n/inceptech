@@ -94,6 +94,8 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
   volumeClaimTemplates:
+  - apiVersion: v1	
+      kind: PersistentVolumeClaim	
   - metadata:
       name: postgresql-data
     spec:
