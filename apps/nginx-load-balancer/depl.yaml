@@ -52,8 +52,8 @@ spec:
               cpu: 30m
               memory: 128Mi
             limits:
-              cpu: 1000m
-              memory: 512Mi
+              cpu: 30m
+              memory: 128Mi
           volumeMounts:
             - name: tls
               mountPath: /etc/nginx/pki

@@ -39,8 +39,8 @@ spec:
             cpu: "50m"
             memory: "256Mi"
           limits:
-            cpu: "1000m"
-            memory: "1Gi"
+            cpu: "50m"
+            memory: "256Mi"
   volumeClaimTemplates:
     - metadata:
         name: ts3-data

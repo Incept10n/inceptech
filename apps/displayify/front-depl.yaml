@@ -28,8 +28,8 @@ spec:
               cpu: "100m"
               memory: "256Mi"
             limits:
-              cpu: "500m"
-              memory: "500Mi"
+              cpu: "100m"
+              memory: "256Mi"
       volumes:
         - name: tls
           secret:
