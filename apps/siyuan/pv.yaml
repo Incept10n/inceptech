@@ -5,10 +5,17 @@ metadata:
 spec:
   capacity:
     storage: 10Gi
-  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain   # <-- critical
-  storageClassName: local-storage         # custom class
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
   local:
-    path: /mnt/siyuan-data                # path on your node
+    path: /mnt/siyuan-data  # Your data path
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname  # GA label, not beta
+          operator: In
+          values:
+          - cl148rcr9mfmndd5t7fp-ocaq # Your node name
