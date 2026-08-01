@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dev-watchly-inceptech-ru
+  namespace: nginx-load-balancer
+spec:
+  secretName: dev-watchly-inceptech-ru
+  issuerRef:
+    name: regru-dns
+    kind: ClusterIssuer
+  dnsNames:
+    - dev.watchly.inceptech.ru
