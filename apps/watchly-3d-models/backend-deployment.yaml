@@ -50,5 +50,3 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "100m"
-          initialDelaySeconds: 5
-          periodSeconds: 5
