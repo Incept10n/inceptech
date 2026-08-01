@@ -94,13 +94,13 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 5
   volumeClaimTemplates:
-  - metadata:
-      name: postgresql-data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      storageClassName: manual
-      resources:
-        requests:
-          storage: 10Gi
+    - metadata:
+        name: postgresql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: manual
+        resources:
+          requests:
+            storage: 10Gi
       apiVersion: v1
       kind: PersistentVolumeClaim
