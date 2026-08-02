@@ -16,8 +16,8 @@ spec:
     namespace: siyuan
   syncPolicy:
     automated:
-      prune: true
-      # prune: false
+      # prune: true
+      prune: false
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
