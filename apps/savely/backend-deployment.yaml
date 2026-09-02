@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: savely
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 5000
+    targetPort: 5000
+    name: http
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: savely
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: incept1on/savely:back
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        - name: AUTH_STRING
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: AUTH_STRING
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: DB_PORT
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: DB_USER
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: DB_PASSWORD
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: DB_NAME
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5

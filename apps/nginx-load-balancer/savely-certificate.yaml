@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: savely-server-tls
+  namespace: nginx-load-balancer
+spec:
+  secretName: savely-server-tls
+  issuerRef:
+    name: regru-dns
+    kind: ClusterIssuer
+  dnsNames:
+    - savely.inceptech.ru
