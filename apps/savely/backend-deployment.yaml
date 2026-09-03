@@ -73,6 +73,31 @@ spec:
             secretKeyRef:
               name: savely-secret
               key: DB_NAME
+        - name: YANDEX_AI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: YANDEX_AI_API_KEY
+        - name: YANDEX_AI_FOLDER_ID
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: YANDEX_AI_FOLDER_ID
+        - name: YANDEX_AI_MODEL_URI
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: YANDEX_AI_MODEL_URI
+        - name: YANDEX_AI_INPUT_PRICE_PER_1K
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: YANDEX_AI_INPUT_PRICE_PER_1K
+        - name: YANDEX_AI_OUTPUT_PRICE_PER_1K
+          valueFrom:
+            secretKeyRef:
+              name: savely-secret
+              key: YANDEX_AI_OUTPUT_PRICE_PER_1K
         resources:
           requests:
             memory: "128Mi"
