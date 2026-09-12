@@ -31,9 +31,9 @@ spec:
               name: watchly-api-secret
               key: SMTP_API_KEY
         - name: FROM_EMAIL
-          value: "noreply@watchly.inceptech.ru"
+          value: "watchly@inceptech.ru"
         - name: TO_EMAIL
-          value: "Incept1on.hf@yandex.ru"
+          value: "watchly@inceptech.ru"
         resources:
           requests:
             memory: "128Mi"
