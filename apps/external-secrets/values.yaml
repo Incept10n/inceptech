@@ -1,2 +1,14 @@
 # Image repo intentionally left at chart default (public ECR).
 # Minimal config; defaults are fine.
+
+crds:
+  annotations:
+    # The secretstores/clustersecretstores CRDs from chart 2.x exceed kubectl's
+    # 256KB last-applied-configuration limit, so client-side apply fails with
+    # "metadata.annotations: Too long". Under ServerSideApply, ArgoCD's CSA->SSA
+    # managed-fields migration transfers ownership of the legacy spec.conversion
+    # fields, which SSA then deletes (manifest has no conversion block) while the
+    # cert-controller-owned caBundle survives -> invalid CRD
+    # ("spec.conversion.strategy: Required value"). Replace=true makes ArgoCD
+    # use a safe in-place Update for CRDs (no cascade delete of CRD instances).
+    argocd.argoproj.io/SyncOptions: Replace=true
