@@ -1,1 +1,9 @@
 # Minimal config; defaults are fine
+image:
+  repository: docker.io/external-secrets/external-secrets
+certController:
+  image:
+    repository: docker.io/external-secrets/external-secrets
+webhook:
+  image:
+    repository: docker.io/external-secrets/external-secrets

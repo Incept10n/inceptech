@@ -1,1 +1,12 @@
 installCRDs: true
+image:
+  repository: docker.io/jetstack/cert-manager-controller
+cainjector:
+  image:
+    repository: docker.io/jetstack/cert-manager-cainjector
+webhook:
+  image:
+    repository: docker.io/jetstack/cert-manager-webhook
+startupapicheck:
+  image:
+    repository: docker.io/jetstack/cert-manager-ctl
