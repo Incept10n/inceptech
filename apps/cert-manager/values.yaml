@@ -1,12 +1,3 @@
+# CRDs are installed via the chart (installCRDs) — required for ClusterIssuer etc.
+# Image repos intentionally left at chart defaults (quay.io/jetstack).
 installCRDs: true
-image:
-  repository: docker.io/jetstack/cert-manager-controller
-cainjector:
-  image:
-    repository: docker.io/jetstack/cert-manager-cainjector
-webhook:
-  image:
-    repository: docker.io/jetstack/cert-manager-webhook
-startupapicheck:
-  image:
-    repository: docker.io/jetstack/cert-manager-ctl
