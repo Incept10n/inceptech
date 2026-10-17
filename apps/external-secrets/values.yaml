@@ -1,6 +1,9 @@
 # Image repo intentionally left at chart default (public ECR).
 # Minimal config; defaults are fine.
 
+# Explicit: CRDs are part of this app's manifest and managed by ArgoCD.
+installCRDs: true
+
 crds:
   annotations:
     # The secretstores/clustersecretstores CRDs from chart 2.x exceed kubectl's
