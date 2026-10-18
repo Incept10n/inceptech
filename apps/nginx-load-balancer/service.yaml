@@ -2,14 +2,22 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-proxy
+  namespace: nginx-load-balancer
+  labels:
+    app: nginx-proxy
+    argocd.argoproj.io/instance: nginx-load-balancer
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: nginx-proxy
   ports:
     - name: http
       port: 80
       targetPort: 80
+      protocol: TCP
+      nodePort: 31192
     - name: https
       port: 443
       targetPort: 443
+      protocol: TCP
+      nodePort: 30862
