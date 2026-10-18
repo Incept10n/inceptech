@@ -46,6 +46,7 @@ spec:
             memory: "256Mi"
   volumeClaimTemplates:
     - metadata:
+        creationTimestamp: null
         name: ts3-data
       spec:
         accessModes:
