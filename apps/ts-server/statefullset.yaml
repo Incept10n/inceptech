@@ -16,8 +16,11 @@ spec:
     spec:
       containers:
       - name: teamspeak
-        image: incept1on/ts-server:master
+        image: teamspeak:3.13.8
         imagePullPolicy: Always
+        env:
+        - name: TS3SERVER_LICENSE
+          value: "accept"
         ports:
         - containerPort: 9987
           name: voice
@@ -33,13 +36,13 @@ spec:
           hostPort: 30033
         volumeMounts:
         - name: ts3-data
-          mountPath: /opt/ts3
+          mountPath: /var/run/ts3server
         resources:
           requests:
-            cpu: "10m"
+            cpu: "500m"
             memory: "256Mi"
           limits:
-            cpu: "10m"
+            cpu: "500m"
             memory: "256Mi"
   volumeClaimTemplates:
     - metadata:
