@@ -45,14 +45,15 @@ spec:
             cpu: "500m"
             memory: "256Mi"
   volumeClaimTemplates:
-    - metadata:
-        creationTimestamp: null
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: ts3-data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 5Gi
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
       apiVersion: v1
       kind: PersistentVolumeClaim
