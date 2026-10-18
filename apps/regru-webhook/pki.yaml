@@ -1,0 +1,48 @@
+# TLS PKI for the aggregated API server backing the reg.ru DNS01 webhook.
+# Self-signed bootstrap only — no external ACME involved (avoids a cycle).
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: regru-webhook-selfsigned
+  namespace: cert-manager
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: regru-webhook-ca
+  namespace: cert-manager
+spec:
+  secretName: regru-webhook-ca
+  duration: 43800h # 5y
+  commonName: ca.regru-webhook.cert-manager
+  isCA: true
+  issuerRef:
+    name: regru-webhook-selfsigned
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: regru-webhook-ca-issuer
+  namespace: cert-manager
+spec:
+  ca:
+    secretName: regru-webhook-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: regru-webhook-serving-cert
+  namespace: cert-manager
+spec:
+  secretName: regru-webhook-serving-cert
+  duration: 8760h # 1y
+  issuerRef:
+    name: regru-webhook-ca-issuer
+    kind: Issuer
+  dnsNames:
+    - regru-webhook
+    - regru-webhook.cert-manager
+    - regru-webhook.cert-manager.svc

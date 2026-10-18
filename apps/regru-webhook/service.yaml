@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: regru-webhook
+  labels:
+    app: regru-webhook
+spec:
+  type: ClusterIP
+  selector:
+    app: regru-webhook
+  ports:
+    - name: https
+      port: 443
+      targetPort: https
+      protocol: TCP

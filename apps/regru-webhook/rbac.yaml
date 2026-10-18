@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: regru-webhook
+  namespace: cert-manager
+---
+# The aggregated apiserver delegates authentication/authorization to the core
+# apiserver (TokenReview / SubjectAccessReview).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: regru-webhook:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: regru-webhook
+    namespace: cert-manager
+---
+# The aggregated apiserver reads the requestheader client CA from kube-system.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: regru-webhook:authentication-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+  - kind: ServiceAccount
+    name: regru-webhook
+    namespace: cert-manager
+---
+# THE FIX for the "regru-dns.acme.regru.ru is forbidden ... at the cluster scope"
+# error: cert-manager POSTs (create) the <solverName>.<groupName> resource to the
+# webhook's aggregated API when presenting a DNS01 challenge. Nothing else is
+# needed — Present and CleanUp are both POSTs (see cert-manager's
+# pkg/issuer/acme/dns/webhook/webhook.go).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: regru-webhook:domain-solver
+rules:
+  - apiGroups:
+      - acme.regru.ru
+    resources:
+      - regru-dns
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: regru-webhook:domain-solver
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: regru-webhook:domain-solver
+subjects:
+  - kind: ServiceAccount
+    name: cert-manager
+    namespace: cert-manager
+---
+# FlowSchema/PriorityLevelConfiguration read access keeps the aggregated apiserver
+# from logging APF errors on start-up.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: regru-webhook:flowcontrol
+rules:
+  - apiGroups:
+      - flowcontrol.apiserver.k8s.io
+    resources:
+      - flowschemas
+      - prioritylevelconfigurations
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: regru-webhook:flowcontrol
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: regru-webhook:flowcontrol
+subjects:
+  - kind: ServiceAccount
+    name: regru-webhook
+    namespace: cert-manager

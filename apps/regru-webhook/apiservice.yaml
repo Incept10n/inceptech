@@ -1,0 +1,17 @@
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.acme.regru.ru
+  labels:
+    app: regru-webhook
+  annotations:
+    # cert-manager's cainjector fills spec.caBundle from the serving certificate
+    cert-manager.io/inject-ca-from: cert-manager/regru-webhook-serving-cert
+spec:
+  group: acme.regru.ru
+  groupPriorityMinimum: 1000
+  versionPriority: 15
+  version: v1alpha1
+  service:
+    name: regru-webhook
+    namespace: cert-manager

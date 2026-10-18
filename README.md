@@ -141,11 +141,18 @@ KV keys consumed by the `ExternalSecret`s:
 | `watchly-3d-models`          | `watchly-3d-models-secret` | watchly-3d-models |
 | `savely`                     | `savely-secret`         | savely            |
 | `displayify`                 | `displayify-secrets`, `displayify-lb-secrets` | displayify, nginx-load-balancer |
-| `regru` (REGRU_PASSWORD)     | `regru-password`        | cert-manager       |
+| `regru` (REGRU_USERNAME, REGRU_PASSWORD) | `regru-password` | cert-manager |
 
 > `regru-password` also exists as a manually created secret in the
 > `cert-manager` namespace — delete it after the KV entry is filled in, or the
 > ExternalSecret will refuse to own it (ownership conflict).
+>
+> `REGRU_USERNAME` is required by the reg.ru DNS01 webhook
+> (`apps/regru-webhook/`), which is what lets cert-manager solve `regru-dns`
+> challenges with the `regru-dns` ClusterIssuer. The `ExternalSecret` uses
+> `dataFrom.extract`, so every key under KV `secret/regru` (e.g.
+> `REGRU_USERNAME`, `REGRU_PASSWORD`) lands in the secret automatically —
+> no manifest change is needed when adding a key.
 
 ```bash
 kubectl -n openbao exec -it openbao-0 -- bao kv put secret/siyuan accessAuthCode="..."

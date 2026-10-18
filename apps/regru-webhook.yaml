@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: regru-webhook
+  namespace: argocd
+  annotations:
+    # cert-manager (-20) must be up first: this app creates cert-manager
+    # Issuer/Certificate objects for the webhook's serving TLS.
+    argocd.argoproj.io/sync-wave: "-15"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Incept10n/inceptech.git
+    targetRevision: master
+    path: apps/regru-webhook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
