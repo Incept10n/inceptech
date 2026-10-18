@@ -1,5 +1,5 @@
 # OpenBao server config.
-# Persistence is ON — requires a default StorageClass (local-path-storage app).
+# Persistence is ON — requires a default StorageClass (yc-network-hdd in prod).
 persistence:
   enabled: true
   size: 10Gi
