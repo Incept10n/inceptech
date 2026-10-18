@@ -157,3 +157,44 @@ kubectl -n openbao exec -it openbao-0 -- bao kv put secret/siyuan accessAuthCode
 kubectl get clustersecretstore openbao-backend   # Ready=True
 kubectl get externalsecret -A                    # STATUS=SecretSynced, READY=True
 ```
+
+## Migrating secrets between OpenBao instances
+
+`scripts/migrate-secrets.sh` recursively copies every secret from a source
+OpenBao KV v2 mount to a destination one (used when migrating to a rebuilt
+cluster). Requires `bao` CLI and `jq` locally.
+
+```bash
+export SRC_TOKEN="s...."   # token of the SOURCE instance
+export DST_TOKEN="s...."   # token of the DESTINATION instance
+
+# Port-forward each instance so they are reachable locally:
+#   source      -> http://127.0.0.1:8200
+#   destination -> http://127.0.0.1:8201
+
+./scripts/migrate-secrets.sh
+```
+
+Tokens are taken from the environment on purpose — do not hardcode them in the
+script. The destination KV mount is created automatically if missing.
+
+## ArgoCD UI access
+
+The admin password is **not stored in git** — it is created once on ArgoCD
+install:
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 -d
+```
+
+If the secret no longer exists (deleted after a password change), reset it with
+`kubectl -n argocd exec argocd-server -- argocd account update-password`.
+
+Port-forward the UI:
+
+```bash
+kubectl -n argocd port-forward svc/argocd-server 8080:443
+```
+
+Open <https://localhost:8080>, login `admin`.
