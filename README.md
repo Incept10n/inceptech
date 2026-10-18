@@ -141,6 +141,11 @@ KV keys consumed by the `ExternalSecret`s:
 | `watchly-3d-models`          | `watchly-3d-models-secret` | watchly-3d-models |
 | `savely`                     | `savely-secret`         | savely            |
 | `displayify`                 | `displayify-secrets`, `displayify-lb-secrets` | displayify, nginx-load-balancer |
+| `regru` (REGRU_PASSWORD)     | `regru-password`        | cert-manager       |
+
+> `regru-password` also exists as a manually created secret in the
+> `cert-manager` namespace — delete it after the KV entry is filled in, or the
+> ExternalSecret will refuse to own it (ownership conflict).
 
 ```bash
 kubectl -n openbao exec -it openbao-0 -- bao kv put secret/siyuan accessAuthCode="..."
