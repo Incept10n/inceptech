@@ -20,8 +20,8 @@ spec:
             serviceAccountName: seaweedfs
             image:
               repository: chrislusf/seaweedfs
-              tag: "latest"
-            imagePullPolicy: IfNotPresent
+              tag: "sha256-60399a22c43509f8ccb9c9c51ebe832d266239c7efe31244722febce57bf783e.sig"
+            imagePullPolicy: Always
 
         master:
           enabled: true
