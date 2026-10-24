@@ -76,6 +76,9 @@ spec:
             - name: savely-server-tls
               mountPath: /etc/nginx/certs/savely
               readOnly: true
+            - name: s3-inceptech-ru-tls
+              mountPath: /etc/nginx/certs/s3
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -132,6 +135,14 @@ spec:
         - name: savely-server-tls
           secret:
             secretName: savely-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: s3-inceptech-ru-tls
+          secret:
+            secretName: s3-inceptech-ru-tls
             items:
               - key: tls.crt
                 path: tls.crt
