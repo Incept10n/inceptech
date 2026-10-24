@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/seaweedfs/seaweedfs.git
-    targetRevision: '4.47'
+    targetRevision: '4.49'
     path: k8s/charts/seaweedfs
     helm:
       releaseName: seaweedfs
