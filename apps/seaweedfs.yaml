@@ -19,6 +19,9 @@ spec:
             createClusterRole: true
             serviceAccountName: seaweedfs
             imagePullPolicy: Always
+            image:
+              repository: "chrislusf"
+              tag: "4.48" 
 
         master:
           enabled: true
