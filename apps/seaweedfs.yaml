@@ -116,6 +116,11 @@ spec:
           grpcPort: 22535
           ip: "0.0.0.0"
           allowInsecureBind: false
+          # UI is published by nginx at https://s3.inceptech.ru/admin/.
+          # Without this the UI emits absolute redirects (/login) and the
+          # browser leaves the subpath. nginx must proxy WITHOUT stripping
+          # the prefix for this to line up.
+          urlPrefix: "/admin"
           secret:
             existingSecret: "seaweedfs-secrets"
             userKey: "admin-user"
