@@ -19,7 +19,7 @@ spec:
             createClusterRole: true
             serviceAccountName: seaweedfs
             image:
-              name: chrislusf/seaweedfs
+              repository: chrislusf/seaweedfs
               tag: "latest"
             imagePullPolicy: IfNotPresent
 
