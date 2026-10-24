@@ -20,6 +20,7 @@ spec:
             serviceAccountName: seaweedfs
             image:
               name: chrislusf/seaweedfs
+              tag: "latest"
             imagePullPolicy: IfNotPresent
 
         master:
