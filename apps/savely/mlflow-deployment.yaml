@@ -98,16 +98,16 @@ spec:
             httpGet:
               path: /health
               port: 5000
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 10
-            failureThreshold: 6
+            failureThreshold: 20
           livenessProbe:
             httpGet:
               path: /health
               port: 5000
             initialDelaySeconds: 60
             periodSeconds: 20
-            failureThreshold: 3
+            failureThreshold: 12
           resources:
             requests:
               memory: "256Mi"
