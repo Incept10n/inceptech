@@ -110,10 +110,10 @@ spec:
             failureThreshold: 12
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "100m"
+              memory: "1024Mi"
+              cpu: "500m"
             limits:
-              memory: "512Mi"
+              memory: "1024Mi"
               cpu: "500m"
       volumes:
         - name: data
