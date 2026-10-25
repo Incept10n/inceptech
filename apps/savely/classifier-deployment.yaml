@@ -135,8 +135,8 @@ spec:
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 5
-            # 60 * 5s = 5 minutes for a cold start (weights + vector build).
-            failureThreshold: 60
+            # 120 * 5s = 10 minutes for a cold start (weights + vector build).
+            failureThreshold: 120
           readinessProbe:
             httpGet:
               path: /docs
