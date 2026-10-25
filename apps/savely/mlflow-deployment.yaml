@@ -1,0 +1,116 @@
+# MLflow: experiment tracking + dataset lineage for the classifier service.
+#
+# The classifier calls `mlflow.set_experiment()` AT IMPORT TIME (it is not our
+# code and we deliberately do not patch it), so MLflow is a HARD dependency of
+# a classifier *start*: if this pod is down, a (re)starting classifier pod
+# crash-loops on import. Running classifier pods are unaffected. That is why
+# this manifest is sync-wave "-1" — it must be Healthy before the classifier is
+# created.
+#
+# Single replica with a RWO local-path PVC: `--backend-store-uri` is SQLite and
+# artifacts are served from the same volume, so the server cannot be scaled out.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-data
+  namespace: savely
+  labels:
+    app: mlflow
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: savely
+  labels:
+    app: mlflow
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  selector:
+    app: mlflow
+  ports:
+    - port: 5000
+      targetPort: 5000
+      name: http
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: savely
+  labels:
+    app: mlflow
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  # RWO volume: two replicas would fight over the same SQLite file.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      containers:
+        - name: mlflow
+          image: ghcr.io/mlflow/mlflow:v2.19.0
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              mkdir -p /data/artifacts
+              exec mlflow server \
+                --backend-store-uri sqlite:////data/mlflow.db \
+                --default-artifact-root /data/artifacts \
+                --host 0.0.0.0 \
+                --port 5000
+          ports:
+            - containerPort: 5000
+              name: http
+          env:
+            # Set explicitly: without it mlflow.start_run() tries to read git
+            # metadata inside the container and spams warnings.
+            - name: GIT_PYTHON_REFRESH
+              value: quiet
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mlflow-data

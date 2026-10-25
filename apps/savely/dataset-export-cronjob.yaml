@@ -1,0 +1,119 @@
+# Weekly refresh of the classifier's dataset.
+#
+# The classifier learns from one CSV in S3. This job merges the categories the
+# user confirmed by hand into that CSV and asks the service to rebuild its
+# vector space, so the model slowly picks up the user's own vocabulary.
+#
+# Only `source='manual'` rows are exported. The classifier's own predictions
+# (`source='knn'`) are never exported — training on a model's output just
+# entrenches its errors.
+#
+# Safety: the job MERGES with the object already in the bucket, so it can never
+# shrink the dataset, and it writes nothing when it has no new labels.
+#
+# It reuses the backend image (small, already has the DB driver + boto3) with a
+# different entrypoint; see `backend/dataset_export.py`.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dataset-export
+  namespace: savely
+  labels:
+    app: dataset-export
+spec:
+  # Sundays 04:00. Weekly on purpose: kNN over ~150 rows does not benefit from
+  # a nightly rebuild, and each reload re-embeds the whole CSV.
+  schedule: "0 4 * * 0"
+  timeZone: Europe/Moscow
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      # Keep finished pods briefly: their logs are the only record of what the
+      # export did.
+      ttlSecondsAfterFinished: 604800
+      template:
+        metadata:
+          labels:
+            app: dataset-export
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: export
+              image: incept1on/savely:back
+              imagePullPolicy: Always
+              command: ["python", "dataset_export.py"]
+              env:
+                # Never let a CronJob create tables behind the app's back.
+                - name: INIT_DB
+                  value: "0"
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: DB_HOST
+                - name: DB_PORT
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: DB_PORT
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: DB_USER
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: DB_PASSWORD
+                - name: DB_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: DB_NAME
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: savely-secret
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_DEFAULT_REGION
+                  value: us-east-1
+                # Shared with the classifier: one place defines where the
+                # dataset lives, so writer and reader cannot diverge.
+                - name: S3_ENDPOINT_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: classifier-config
+                      key: S3_ENDPOINT_URL
+                - name: S3_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: classifier-config
+                      key: S3_BUCKET
+                - name: S3_CSV_KEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: classifier-config
+                      key: S3_CSV_KEY
+                - name: CLASSIFIER_URL
+                  value: http://classifier:8000
+                # Refuse to write a brand-new dataset smaller than this.
+                # Irrelevant when the object already exists (merge keeps rows).
+                - name: DATASET_MIN_ROWS
+                  value: "30"
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "50m"
+                limits:
+                  memory: "256Mi"
+                  cpu: "500m"

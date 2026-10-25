@@ -1,0 +1,34 @@
+# S3 location of the classifier's dataset — the single source of truth.
+#
+# Not a Secret: an endpoint URL, a bucket name and an object key are not
+# credentials. The credentials (`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`)
+# do come from OpenBao via `savely-secret`.
+#
+# Both consumers read THIS object:
+#   - `dataset-export-cronjob.yaml` (writer: weekly merge of confirmed labels)
+#   - `classifier-deployment.yaml` (reader: boto3 download at startup)
+# so they cannot drift apart. A mismatch here would mean the CronJob writes to
+# a key the service never reads, and the service then answers 503 forever with
+# only a "Критическая ошибка" line in its log (knn.py swallows that exception).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: classifier-config
+  namespace: savely
+  labels:
+    app: classifier
+  annotations:
+    # Before the classifier (wave 0) for the same reason mlflow is: a missing
+    # env source would only surface as CreateContainerConfigError.
+    argocd.argoproj.io/sync-wave: "-1"
+data:
+  # SeaweedFS S3, ClusterIP Service `seaweedfs-s3` in namespace `seaweedfs`,
+  # plain http (no TLS on that release), port 8333.
+  S3_ENDPOINT_URL: http://seaweedfs-s3.seaweedfs.svc.cluster.local:8333
+  # Already exists, with ~116 hand-labelled comments. It is the only copy of
+  # the dataset: nothing recreates it, so do not delete it.
+  S3_BUCKET: savely-bucket
+  # Object path inside the bucket. The weekly CronJob merges into this object
+  # and never replaces it; changing the key means the service reads an empty
+  # dataset until the next run.
+  S3_CSV_KEY: savely_spends.csv

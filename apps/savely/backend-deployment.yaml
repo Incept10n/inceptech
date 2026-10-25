@@ -98,6 +98,23 @@ spec:
             secretKeyRef:
               name: savely-secret
               key: YANDEX_AI_OUTPUT_PRICE_PER_1K
+        # Category report comes from the in-cluster classifier (kNN over e5
+        # embeddings) instead of YandexGPT. Values are plain config, not
+        # secrets; empty CLASSIFIER_URL = classification off.
+        - name: CATEGORIES_BACKEND
+          value: knn
+        - name: CLASSIFIER_URL
+          value: http://classifier:8000
+        - name: CLASSIFIER_TIMEOUT
+          value: "3"
+        - name: CLASSIFIER_MAX_RETRIES
+          value: "1"
+        - name: CLASSIFIER_CONCURRENCY
+          value: "8"
+        - name: CLASSIFIER_COSINE_FLOOR
+          value: "0.80"
+        - name: CLASSIFIER_REVIEW_COSINE
+          value: "0.86"
         resources:
           requests:
             memory: "128Mi"

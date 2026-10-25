@@ -1,0 +1,160 @@
+# Classifier service: POST /predict {word} -> {category, confidence}
+# Source: github.com/Incept10n/savely, `classifier/` (NOT modified by savely).
+#
+# Required keys in OpenBao `secret/data/savely` (the existing ExternalSecret
+# extracts them into `savely-secret` within ~30s) — credentials only:
+#   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY   (SeaweedFS s3 credentials,
+#                                                see seaweedfs/seaweedfs-secrets)
+# Endpoint, bucket and object key are plain config set below, not secrets.
+#
+# Cold start: the service downloads the e5-small weights from HuggingFace and
+# then builds its vector space from the CSV inside the lifespan — uvicorn does
+# not answer until both are done, so /docs (200 only when serving) is the probe.
+#
+# MLflow must be up first: `mlflow.set_experiment()` runs at import time in
+# knn.py, so a restart with MLflow down fails on import. Hence sync-wave "0"
+# (after mlflow's "-1").
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: classifier-hf
+  namespace: savely
+  labels:
+    app: classifier
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: classifier
+  namespace: savely
+  labels:
+    app: classifier
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  selector:
+    app: classifier
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: http
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classifier
+  namespace: savely
+  labels:
+    app: classifier
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  # One replica on purpose: the image carries the CUDA build of torch
+  # (PyPI `torch` dependency in classifier/uv.lock) and needs ~1.5-2GiB RSS.
+  # The worker node has ~3.7GiB of requests left, so a second copy would be
+  # asking for trouble, and the model is loaded per pod anyway.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: classifier
+  template:
+    metadata:
+      labels:
+        app: classifier
+    spec:
+      containers:
+        - name: classifier
+          image: incept1on/savely:classifier
+          # `Always` keeps tag updates flowing: the kubelet re-checks the
+          # manifest digest on start, but cached layers are not re-downloaded.
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          env:
+            - name: MODEL_NAME
+              value: intfloat/multilingual-e5-small
+            - name: MLFLOW_TRACKING_URI
+              value: http://mlflow:5000
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            - name: GIT_PYTHON_REFRESH
+              value: quiet
+            # Keep the downloaded weights on the PVC: without it every restart
+            # re-downloads ~470MB from HuggingFace.
+            - name: HF_HOME
+              value: /models
+            # Endpoint/bucket/key live in `classifier-config` so the writer
+            # (bootstrap Job) and this reader cannot diverge.
+            - name: S3_ENDPOINT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: classifier-config
+                  key: S3_ENDPOINT_URL
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: classifier-config
+                  key: S3_BUCKET
+            - name: S3_CSV_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: classifier-config
+                  key: S3_CSV_KEY
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: savely-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: savely-secret
+                  key: AWS_SECRET_ACCESS_KEY
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /models
+          startupProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            # 60 * 5s = 5 minutes for a cold start (weights + vector build).
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "1500Mi"
+              cpu: "500m"
+            limits:
+              memory: "3Gi"
+              cpu: "2"
+      volumes:
+        - name: hf-cache
+          persistentVolumeClaim:
+            claimName: classifier-hf
