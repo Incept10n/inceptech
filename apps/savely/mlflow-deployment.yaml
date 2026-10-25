@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
         - name: mlflow
-          image: ghcr.io/mlflow/mlflow:v2.19.0
+          image: burakince/mlflow:2.19.0
           command:
             - /bin/sh
             - -c
