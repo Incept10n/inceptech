@@ -1,11 +1,20 @@
 # MLflow: experiment tracking + dataset lineage for the classifier service.
 #
+# Sync-wave: none, i.e. the default wave 0, together with the PVC. That is not
+# laziness — ArgoCD applies every PVC in a wave before any Deployment in the
+# same wave, so `mlflow-data` is guaranteed to exist when the pod is created.
+# Putting the Deployment in a *lower* wave than its PVC deadlocks the sync:
+# ArgoCD waits for the Deployment to become healthy and never applies the wave
+# holding the PVC. Putting the PVC alone in a lower wave also deadlocks, because
+# the `local-path` StorageClass is WaitForFirstConsumer: the PVC stays Pending
+# until a pod uses it, and ArgoCD counts a PVC healthy only when Bound.
+#
 # The classifier calls `mlflow.set_experiment()` AT IMPORT TIME (it is not our
 # code and we deliberately do not patch it), so MLflow is a HARD dependency of
 # a classifier *start*: if this pod is down, a (re)starting classifier pod
 # crash-loops on import. Running classifier pods are unaffected. That is why
-# this manifest is sync-wave "-1" — it must be Healthy before the classifier is
-# created.
+# the whole classifier group is sync-wave "1" and this group stays in "0": the
+# classifier is only created once MLflow is Healthy.
 #
 # Single replica with a RWO local-path PVC: `--backend-store-uri` is SQLite and
 # artifacts are served from the same volume, so the server cannot be scaled out.
@@ -31,8 +40,6 @@ metadata:
   namespace: savely
   labels:
     app: mlflow
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   selector:
     app: mlflow
@@ -49,8 +56,6 @@ metadata:
   namespace: savely
   labels:
     app: mlflow
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   # RWO volume: two replicas would fight over the same SQLite file.
   replicas: 1

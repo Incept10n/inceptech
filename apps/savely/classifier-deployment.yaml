@@ -12,8 +12,11 @@
 # not answer until both are done, so /docs (200 only when serving) is the probe.
 #
 # MLflow must be up first: `mlflow.set_experiment()` runs at import time in
-# knn.py, so a restart with MLflow down fails on import. Hence sync-wave "0"
-# (after mlflow's "-1").
+# knn.py, so a restart with MLflow down fails on import. Hence sync-wave "1":
+# the whole mlflow group sits in wave 0 and ArgoCD waits for wave 0 to be
+# healthy before creating any of these three resources. The PVC is in the same
+# wave on purpose — same-wave kind ordering puts it before the Deployment
+# (see the comment in mlflow-deployment.yaml).
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -22,7 +25,7 @@ metadata:
   labels:
     app: classifier
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   accessModes:
     - ReadWriteOnce
@@ -39,7 +42,7 @@ metadata:
   labels:
     app: classifier
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   selector:
     app: classifier
@@ -57,7 +60,7 @@ metadata:
   labels:
     app: classifier
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   # One replica on purpose: the image carries the CUDA build of torch
   # (PyPI `torch` dependency in classifier/uv.lock) and needs ~1.5-2GiB RSS.
