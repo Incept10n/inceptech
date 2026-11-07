@@ -79,6 +79,9 @@ spec:
             - name: s3-inceptech-ru-tls
               mountPath: /etc/nginx/certs/s3
               readOnly: true
+            - name: wedding-server-tls
+              mountPath: /etc/nginx/certs/wedding
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -143,6 +146,14 @@ spec:
         - name: s3-inceptech-ru-tls
           secret:
             secretName: s3-inceptech-ru-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: wedding-server-tls
+          secret:
+            secretName: wedding-server-tls
             items:
               - key: tls.crt
                 path: tls.crt
