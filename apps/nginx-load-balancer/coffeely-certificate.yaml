@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: coffeely-server-tls
+  namespace: nginx-load-balancer
+spec:
+  secretName: coffeely-server-tls
+  issuerRef:
+    name: regru-dns
+    kind: ClusterIssuer
+  dnsNames:
+    - coffeely.inceptech.ru

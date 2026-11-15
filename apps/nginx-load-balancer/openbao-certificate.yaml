@@ -1,0 +1,14 @@
+# UI/API OpenBao наружу: https://openbao.inceptech.ru (конфиг nginx-LB —
+# репозиторий nginx-inceptech-loadblalancer, conf.d/openbao-inceptech-ru.conf).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: openbao-server-tls
+  namespace: nginx-load-balancer
+spec:
+  secretName: openbao-server-tls
+  issuerRef:
+    name: regru-dns
+    kind: ClusterIssuer
+  dnsNames:
+    - openbao.inceptech.ru

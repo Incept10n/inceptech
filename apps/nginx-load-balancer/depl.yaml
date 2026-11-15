@@ -82,6 +82,12 @@ spec:
             - name: wedding-server-tls
               mountPath: /etc/nginx/certs/wedding
               readOnly: true
+            - name: coffeely-server-tls
+              mountPath: /etc/nginx/certs/coffeely
+              readOnly: true
+            - name: openbao-server-tls
+              mountPath: /etc/nginx/certs/openbao
+              readOnly: true
       terminationGracePeriodSeconds: 30
       
       volumes:
@@ -154,6 +160,22 @@ spec:
         - name: wedding-server-tls
           secret:
             secretName: wedding-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: coffeely-server-tls
+          secret:
+            secretName: coffeely-server-tls
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        - name: openbao-server-tls
+          secret:
+            secretName: openbao-server-tls
             items:
               - key: tls.crt
                 path: tls.crt

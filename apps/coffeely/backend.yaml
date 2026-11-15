@@ -1,0 +1,111 @@
+# API coffeely (Go). Образ собирает CI репозитория coffeely:
+#   incept1on/coffeely-backend:backend  (push в main)
+# Тег мутабельный, imagePullPolicy: Always — новый образ подхватывается
+# рестартом пода (ArgoCD сам не рестартует: `kubectl rollout restart`).
+#
+# Миграции — initContainer тем же образом (/app/migrate up, идемпотентно,
+# с ожиданием готовности БД). Схема накатывается до старта приложения.
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: coffeely
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: coffeely
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      initContainers:
+        - name: migrate
+          image: incept1on/coffeely-backend:backend
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - "until /app/migrate up; do echo 'waiting for postgres'; sleep 3; done"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: coffeely-secrets
+                  key: DATABASE_URL
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+      containers:
+        - name: backend
+          image: incept1on/coffeely-backend:backend
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: ENV
+              value: prod
+            - name: PORT
+              value: "8080"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: coffeely-secrets
+                  key: DATABASE_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: coffeely-secrets
+                  key: JWT_SECRET
+            # Публичный адрес для OAuth Yandex ID (когда появятся ключи).
+            - name: YANDEX_REDIRECT_URL
+              value: https://api.coffeely.inceptech.ru/auth/yandex/callback
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "15m"
+            limits:
+              memory: "192Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 3

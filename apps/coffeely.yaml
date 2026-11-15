@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coffeely
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Incept10n/inceptech.git
+    targetRevision: master
+    path: apps/coffeely
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: coffeely
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # ExternalSecret / CRD-объекты; заодно обходит лимит
+      # last-applied-configuration в 256KB.
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
