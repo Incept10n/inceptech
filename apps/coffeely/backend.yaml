@@ -98,10 +98,25 @@ spec:
                 secretKeyRef:
                   name: coffeely-secrets
                   key: ADMIN_CRM_SECRET
-            # Публичный адрес для OAuth Yandex ID (когда появятся ключи).
+            # Публичный адрес для OAuth Yandex ID (web-флоу; приложение входит
+            # по токену LoginSDK через POST /auth/yandex/token).
             # API живёт под /api на том же домене, что лендинг.
             - name: YANDEX_REDIRECT_URL
               value: https://coffeely.inceptech.ru/api/auth/yandex/callback
+            # Вход через Яндекс ID в приложении. Без YANDEX_CLIENT_ID фича
+            # выключена: /auth/providers отдаёт false, кнопки в APK нет.
+            - name: YANDEX_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: coffeely-secrets
+                  key: YANDEX_CLIENT_ID
+            # Секрет нужен серверному web-флоу и проверке JWT; для
+            # POST /auth/yandex/token достаточно ClientID.
+            - name: YANDEX_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: coffeely-secrets
+                  key: YANDEX_CLIENT_SECRET
             # Подтверждение email: пароль ящика Exchange (NTLM).
             # Остальное — дефолты конфига (coffeely@inceptech.ru, EWS на
             # mail.inceptech.ru), вынесены сюда явно для смены отправителя.
