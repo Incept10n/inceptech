@@ -86,6 +86,12 @@ spec:
                 secretKeyRef:
                   name: coffeely-secrets
                   key: JWT_SECRET
+            # Строка входа во внутреннюю админку создателей (/admin).
+            - name: ADMIN_CRM_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: coffeely-secrets
+                  key: ADMIN_CRM_SECRET
             # Публичный адрес для OAuth Yandex ID (когда появятся ключи).
             # API живёт под /api на том же домене, что лендинг.
             - name: YANDEX_REDIRECT_URL
