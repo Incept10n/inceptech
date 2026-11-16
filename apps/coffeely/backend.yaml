@@ -103,14 +103,14 @@ spec:
             - name: YANDEX_REDIRECT_URL
               value: https://coffeely.inceptech.ru/api/auth/yandex/callback
             # Подтверждение email: пароль ящика Exchange (NTLM).
-            # Остальное — дефолты конфига (watchly@inceptech.ru, EWS на
+            # Остальное — дефолты конфига (coffeely@inceptech.ru, EWS на
             # mail.inceptech.ru), вынесены сюда явно для смены отправителя.
             - name: MAIL_EWS_URL
               value: https://mail.inceptech.ru/EWS/Exchange.asmx
             - name: MAIL_USERNAME
-              value: watchly@inceptech.ru
+              value: coffeely@inceptech.ru
             - name: MAIL_FROM
-              value: watchly@inceptech.ru
+              value: coffeely@inceptech.ru
             - name: MAIL_FROM_NAME
               value: coffeely
             - name: MAIL_PASSWORD
